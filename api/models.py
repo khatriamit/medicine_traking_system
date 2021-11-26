@@ -32,7 +32,7 @@ class Medicine(Base):
     id = _sql.Column(_sql.Integer, primary_key=True, index=True)
     name = _sql.Column(_sql.String, index=True)
     time_for_medicine = _sql.Column(_sql.String)
-    patient_id = _sql.Column(_sql.Integer, _sql.ForeignKey("patients.id"))
+    # patient_id = _sql.Column(_sql.Integer, _sql.ForeignKey("patients.id"))
     start_date = _sql.Column(_sql.Date)
     end_date = _sql.Column(_sql.Date)
     quantity = _sql.Column(_sql.Integer)
