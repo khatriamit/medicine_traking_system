@@ -1,4 +1,5 @@
 from typing import List
+from fastapi.encoders import jsonable_encoder
 import sqlalchemy.orm as _orm
 import fastapi as _fastapi
 
@@ -27,7 +28,8 @@ def get_patient_by_name(db: _orm.Session, name: str, phone: str):
 
 
 def get_patients(db: _orm.Session, skip: int = 0, limit: int = 100):
-    return db.query(_models.Patient).offset(skip).limit(limit).all()
+    query = db.query(_models.Patient).offset(skip).limit(limit).all()
+    return jsonable_encoder(query)
 
 
 def create_patient(db: _orm.Session, patient: _schemas.PatientCreate):

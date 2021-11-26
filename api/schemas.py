@@ -35,6 +35,9 @@ class _PatientBase(_pydantic.BaseModel):
 class PatientCreate(_PatientBase):
     pass
 
+    class Config:
+        orm_mode = True
+
 
 class Patient(_PatientBase):
     id: int
@@ -44,15 +47,8 @@ class Patient(_PatientBase):
         orm_mode = True
 
 
-# class MedicineWithPatient(_MedicineBase):
-#     owner: List[Patient] = []
-
-#     class Config:
-#         orm_mode = True
-
-
 class MedicinePatient(Medicine):
-    patient: List[Patient] = []
+    patient: List[PatientCreate] = []
 
 
 class AssignMedicine(_pydantic.BaseModel):

@@ -23,7 +23,7 @@ def create_patient(
     return _services.create_patient(db=db, patient=patient)
 
 
-@app.get("/patients/", response_model=List[_schemas.Patient])
+@app.get("/patients/", response_model=List[_schemas.PatientCreate])
 def read_patients(
     skip: int = 0,
     limit: int = 10,
