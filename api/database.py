@@ -3,7 +3,7 @@ import sqlalchemy.ext.declarative as _declarative
 import sqlalchemy.orm as _orm
 
 # SQLALCHEMY_DATABASE_URL = "sqlite:///./database.db"
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@localhost/medicine"
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@med_db/medicine"
 
 engine = _sql.create_engine(
     SQLALCHEMY_DATABASE_URL,

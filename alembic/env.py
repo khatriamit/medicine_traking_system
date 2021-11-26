@@ -10,7 +10,7 @@ from api.models import Base
 # access to the values within the .ini file in use.
 config = context.config
 config.set_main_option(
-    "sqlalchemy.url", "postgresql://postgres:postgres@localhost/medicine"
+    "sqlalchemy.url", "postgresql://postgres:postgres@med_db/medicine"
 )
 
 # Interpret the config file for Python logging.
