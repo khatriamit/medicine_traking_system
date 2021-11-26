@@ -1,6 +1,6 @@
 from typing import List
-from fastapi.encoders import jsonable_encoder
 import sqlalchemy.orm as _orm
+import fastapi as _fastapi
 
 
 import api.models as _models, api.schemas as _schemas, api.database as _database
@@ -82,18 +82,40 @@ def update_medicine(
     return db_medicine
 
 
-def check_patient_medicine(db: _orm.Session, medicine_id: int):
+def get_patient_medicine(db: _orm.Session, patient_id: int):
     db_patient = (
-        db.query(_models.Medicine).filter(_models.Medicine.id == medicine_id).all()
+        db.query(_models.Patient).filter(_models.Patient.id == patient_id).first()
     )
-    print(jsonable_encoder(db_patient))
-    # breakpoint()
-    return db_patient
+    meds = db_patient.medicines
+    my_meds = []
+    for med in meds:
+        my_meds.append(med.id)
+    return my_meds
 
 
-def mark_taken(db: _orm.Session, id: List):
-    res = check_patient_medicine(db, medicine_id=2)
-    print(res)
+def substract_quantity(db: _orm.Session, ids: List):
+    for medicine_id in ids:
+        db_medicine = get_medicine(db=db, medicine_id=medicine_id)
+        if db_medicine.quantity > 1:
+            db_medicine.quantity -= 1
+            db.commit()
+            db.refresh(db_medicine)
+        else:
+            raise _fastapi.HTTPException(
+                status_code=400,
+                detail=f"your medicine {medicine_id} has already been completed",
+            )
+
+
+def mark_taken(db: _orm.Session, id: List, patient_id: int):
+    my_meds = get_patient_medicine(db, patient_id=patient_id)
+    for i in id:
+        if i not in my_meds:
+            raise _fastapi.HTTPException(
+                status_code=400,
+                detail=f"sorry medicine {i} does not exist in your meds",
+            )
+    substract_quantity(db, ids=id)
 
 
 def assing_medicine(db: _orm.Session, assign: _schemas.AssignMedicine):

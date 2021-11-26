@@ -58,3 +58,7 @@ class MedicinePatient(Medicine):
 class AssignMedicine(_pydantic.BaseModel):
     medicine: int
     patient: int
+
+
+class MedicineID(_pydantic.BaseModel):
+    id: List[int]

@@ -44,7 +44,7 @@ def read_patient(
             status_code=404,
             detail="sorry this patient does not exist",
         )
-    return db_patients
+    return db_patient
 
 
 @app.post("/patients/{patient_id}/medicines/", response_model=_schemas.MedicinePatient)
@@ -106,13 +106,14 @@ def update_medicine(
     )
 
 
-# @app.post("/patient/{patient_id}/mark_taken/")
-# def mark_taken(
-#     medicine_ids: _schemas.MedicineID,
-#     db: _orm.Session = _fastapi.Depends(_services.get_db),
-# ):
-#     id_list = medicine_ids.dict().get("id")
-#     _services.mark_taken(db, id_list)
+@app.post("/patient/{patient_id}/mark_taken/")
+def mark_taken(
+    medicine_ids: _schemas.MedicineID,
+    patient_id: int,
+    db: _orm.Session = _fastapi.Depends(_services.get_db),
+):
+    id_list = medicine_ids.dict().get("id")
+    _services.mark_taken(db, id_list, patient_id)
 
 
 @app.post("/assige_medicine/", response_model=_schemas.MedicinePatient)
