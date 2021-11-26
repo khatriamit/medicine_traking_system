@@ -28,7 +28,7 @@ class MedicineCreate(_MedicineBase):
 
 class Medicine(_MedicineBase):
     id: int
-    patient_id: int
+    # patient_id: int
     created_at: _dt.datetime
     updated_at: _dt.datetime
 
@@ -68,3 +68,12 @@ class AssignMedicine(_pydantic.BaseModel):
 
 class MedicineID(_pydantic.BaseModel):
     id: List[int]
+
+
+class MyMedicine(_pydantic.BaseModel):
+    name: str
+    quantity: int
+    time_for_medicine: str
+    type: _cons.MedicineTypes
+    start_date: _dt.date
+    end_date: _dt.date
