@@ -129,6 +129,7 @@ def assing_medicine(db: _orm.Session, assign: _schemas.AssignMedicine):
     db_patient = (
         db.query(_models.Patient).filter(_models.Patient.id == assign.patient).first()
     )
+
     db_medicine.patient.append(db_patient)
     db.commit()
     db.refresh(db_medicine)

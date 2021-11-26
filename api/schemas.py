@@ -1,15 +1,25 @@
 from typing import List
 import datetime as _dt
 import pydantic as _pydantic
+import api.constants as _cons
 
 
 class _MedicineBase(_pydantic.BaseModel):
     name: str
     quantity: int
     time_for_medicine: str
-    type: str
+    type: _cons.MedicineTypes
     start_date: _dt.date
     end_date: _dt.date
+
+    @_pydantic.root_validator
+    def check_passwords_match(cls, values):
+        start_date, end_date = values.get("start_date"), values.get("end_date")
+        if start_date > end_date:
+            raise ValueError("start date is ahead than end date")
+        if start_date < _dt.date.today():
+            raise ValueError("past date not allowed")
+        return values
 
 
 class MedicineCreate(_MedicineBase):

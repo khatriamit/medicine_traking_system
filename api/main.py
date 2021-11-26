@@ -47,7 +47,7 @@ def read_patient(
     return db_patient
 
 
-@app.post("/patients/{patient_id}/medicines/", response_model=_schemas.MedicinePatient)
+@app.post("/patients/{patient_id}/medicines/", response_model=_schemas.Medicine)
 def create_medicine(
     patient_id: int,
     medicine: _schemas.MedicineCreate,
