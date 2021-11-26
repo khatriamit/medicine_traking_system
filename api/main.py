@@ -1,14 +1,16 @@
 from typing import List
+import datetime as _dt
 import fastapi as _fastapi
 import sqlalchemy.orm as _orm
 import api.services as _services, api.schemas as _schemas
+from pydantic import parse_obj_as
 
 app = _fastapi.FastAPI()
 
 _services.create_database()
 
 
-@app.post("/patients/", response_model=_schemas.Patient)
+@app.post("/patients/", response_model=_schemas.PatientCreate)
 def create_patient(
     patient: _schemas.PatientCreate,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
@@ -47,18 +49,12 @@ def read_patient(
     return db_patient
 
 
-@app.post("/patients/{patient_id}/medicines/", response_model=_schemas.Medicine)
+@app.post("/medicines/", response_model=_schemas.Medicine)
 def create_medicine(
-    patient_id: int,
     medicine: _schemas.MedicineCreate,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
-    db_user = _services.get_patient(db=db, patient_id=patient_id)
-    if db_user is None:
-        raise _fastapi.HTTPException(
-            status_code=404, detail="sorry this user does not exist"
-        )
-    return _services.create_medicine(db=db, medicine=medicine, patient_id=patient_id)
+    return _services.create_medicine(db=db, medicine=medicine)
 
 
 @app.get("/medicines/", response_model=List[_schemas.Medicine])
@@ -114,11 +110,25 @@ def mark_taken(
 ):
     id_list = medicine_ids.dict().get("id")
     _services.mark_taken(db, id_list, patient_id)
+    return {"messsage": "medicine taken successfully"}
 
 
-@app.post("/assige_medicine/", response_model=_schemas.MedicinePatient)
+@app.post("/assign_medicine/", response_model=_schemas.MedicinePatient)
 def assign_medicine(
     assign: _schemas.AssignMedicine,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
     return _services.assing_medicine(db, assign)
+
+
+@app.get("/{patient_id}/my_medicines/")
+def my_medicines(
+    date: _dt.date,
+    patient_id: int,
+    db: _orm.Session = _fastapi.Depends(_services.get_db),
+):
+    result = _services.list_my_meds(db, date, patient_id)
+    return parse_obj_as(
+        List[_schemas.MyMedicine],
+        result,
+    )
