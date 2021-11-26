@@ -2,9 +2,9 @@ from typing import List
 from fastapi.encoders import jsonable_encoder
 import sqlalchemy.orm as _orm
 import fastapi as _fastapi
+import datetime as _dt
 
-
-import api.models as _models, api.schemas as _schemas, api.database as _database
+import api.models as _models, api.schemas as _schemas, api.database as _database, api.lib as _lib
 
 
 def create_database():
@@ -49,9 +49,10 @@ def get_medicines(db: _orm.Session, skip: int = 0, limit: int = 10):
 
 
 def create_medicine(
-    db: _orm.Session, medicine: _schemas.MedicineCreate, patient_id: int
+    db: _orm.Session,
+    medicine: _schemas.MedicineCreate,
 ):
-    medicine = _models.Medicine(**medicine.dict(), patient_id=patient_id)
+    medicine = _models.Medicine(**medicine.dict())
     db.add(medicine)
     db.commit()
     db.refresh(medicine)
@@ -85,6 +86,7 @@ def update_medicine(
 
 
 def get_patient_medicine(db: _orm.Session, patient_id: int):
+
     db_patient = (
         db.query(_models.Patient).filter(_models.Patient.id == patient_id).first()
     )
@@ -98,7 +100,7 @@ def get_patient_medicine(db: _orm.Session, patient_id: int):
 def substract_quantity(db: _orm.Session, ids: List):
     for medicine_id in ids:
         db_medicine = get_medicine(db=db, medicine_id=medicine_id)
-        if db_medicine.quantity > 1:
+        if db_medicine.quantity > 0:
             db_medicine.quantity -= 1
             db.commit()
             db.refresh(db_medicine)
@@ -117,7 +119,7 @@ def mark_taken(db: _orm.Session, id: List, patient_id: int):
                 status_code=400,
                 detail=f"sorry medicine {i} does not exist in your meds",
             )
-    substract_quantity(db, ids=id)
+    _lib.substract_quantity(db, ids=id)
 
 
 def assing_medicine(db: _orm.Session, assign: _schemas.AssignMedicine):
@@ -134,3 +136,21 @@ def assing_medicine(db: _orm.Session, assign: _schemas.AssignMedicine):
     db.commit()
     db.refresh(db_medicine)
     return db_medicine
+
+
+def list_my_meds(db: _orm.Session, date: _dt.date, patient_id: int):
+    patient_meds = get_patient_medicine(db, patient_id=patient_id)
+    result = []
+    for med in patient_meds:
+        obj = (
+            db.query(_models.Medicine)
+            .filter(_models.Medicine.id == med)
+            .filter(_models.Medicine.start_date <= date)
+            .filter(_models.Medicine.end_date >= date)
+            .all()
+        )
+        res = jsonable_encoder(obj)
+        for med_obj in res:
+            result.append(med_obj)
+
+    return result
