@@ -1,4 +1,12 @@
-# Django Template in Docker
+# For API docs
+
+after successfully setting up the project
+```sh
+In your browser ##localhost:8000/docs/
+If it did not work at first press Ctrl+ s in your api/main.py 
+```
+
+# FastAPI in Docker
 
 
 ## Git
