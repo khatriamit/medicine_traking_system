@@ -30,13 +30,15 @@ To stop all running containers
     Stopping med_service   ... done
 
 ## Check your database
-$ docker exec -it med_db psql -U postgres
-$ postgres=# \t                     # To check your table if medicine is in your list then your db is ready else follow the command below
+
+
+    $ docker exec -it med_db psql -U postgres
+    $ postgres=# \t                     # To check your table if medicine is in your list then your db is ready else follow the command below
 
 ## Create your database
 
-$ docker exec -it med_service bash
-$ root@<container_id>:/code# alembic upgrade head       # Then follow the check your database steps
+    $ docker exec -it med_service bash
+    $ root@<container_id>:/code# alembic upgrade head       # Then follow the check your database steps
 
 
 ## Postgresql
