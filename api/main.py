@@ -15,6 +15,9 @@ def create_patient(
     patient: _schemas.PatientCreate,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
+    """
+    patient add api endpoint
+    """
     db_patient = _services.get_patient_by_name(
         db=db, name=patient.name, phone=patient.phone
     )
@@ -31,6 +34,9 @@ def read_patients(
     limit: int = 10,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
+    """
+    all patients get api endpoint
+    """
     patients = _services.get_patients(db=db, skip=skip, limit=limit)
     return patients
 
@@ -40,6 +46,9 @@ def read_patient(
     patient_id: int,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
+    """
+    single patient with detail get api endpoint
+    """
     db_patient = _services.get_patient(db=db, patient_id=patient_id)
     if db_patient is None:
         raise _fastapi.HTTPException(
@@ -54,6 +63,9 @@ def create_medicine(
     medicine: _schemas.MedicineCreate,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
+    """
+    medcine add api endpoint
+    """
     return _services.create_medicine(db=db, medicine=medicine)
 
 
@@ -63,6 +75,9 @@ def get_medicines(
     limit: int = 10,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
+    """
+    all medicines get api endpoint
+    """
     medicines = _services.get_medicines(db=db, skip=skip, limit=limit)
     return medicines
 
@@ -71,6 +86,9 @@ def get_medicines(
 def get_medicine(
     medicine_id: int, db: _orm.Session = _fastapi.Depends(_services.get_db)
 ):
+    """
+    single medicine get api endpoint
+    """
     medicine = _services.get_medicine(db=db, medicine_id=medicine_id)
     if medicine is None:
         raise _fastapi.HTTPException(
@@ -85,6 +103,9 @@ def delete_medicine(
     medicine_id: int,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
+    """
+    delete medicine api endpoint
+    """
     _services.delete_medicine(db=db, medicine_id=medicine_id)
     return {"message": f"successfully deleted medicine with id: {medicine_id}"}
 
@@ -95,6 +116,10 @@ def update_medicine(
     medicine: _schemas.MedicineCreate,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
+
+    """
+    update medicine api endpoint
+    """
     return _services.update_medicine(
         db=db,
         medicine=medicine,
@@ -108,6 +133,9 @@ def mark_taken(
     patient_id: int,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
+    """
+    endpoint for making medicine as taken
+    """
     id_list = medicine_ids.dict().get("id")
     _services.mark_taken(db, id_list, patient_id)
     return {"messsage": "medicine taken successfully"}
@@ -118,6 +146,9 @@ def assign_medicine(
     assign: _schemas.AssignMedicine,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
+    """
+    endpoint for assigning medicine to patient
+    """
     return _services.assing_medicine(db, assign)
 
 
@@ -127,6 +158,9 @@ def my_medicines(
     patient_id: int,
     db: _orm.Session = _fastapi.Depends(_services.get_db),
 ):
+    """
+    endpoint to filter users medicine status using date filter
+    """
     result = _services.list_my_meds(db, date, patient_id)
     return parse_obj_as(
         List[_schemas.MyMedicine],
